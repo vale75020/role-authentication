@@ -2,22 +2,23 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const Admin = require("../models/Admin");
 const config = require("../config/database");
 
 router.post("/register", (req, res) => {
   // return res.json(
   //     req.body
   // );
-  let newUser = new User({
-    //userSchema
+  let newAdmin = new Admin({
+    //adminSchema
     name: req.body.name,
     username: req.body.username,
     email: req.body.email,
     contact: req.body.contact,
-    password: req.body.password
+    password: req.body.password,
+    job_profile: req.body.job_profile
   });
-  User.addUser(newUser, (err, user) => {
+  Admin.addAdmin(newAdmin, (err, user) => {
     if (err) {
       let message = "";
       if (err.errors.username) message = "username is already taken";
@@ -29,7 +30,7 @@ router.post("/register", (req, res) => {
     } else {
       return res.json({
         success: true,
-        message: "User registration is successful"
+        message: "Admin registration is successful"
       });
     }
   });
@@ -39,26 +40,27 @@ router.post("/login", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  User.getUserByUsername(username, (err, user) => {
+  Admin.getUserByUsername(username, (err, admin) => {
     if (err) throw err;
-    if (!user) {
+    if (!admin) {
       return res.json({
         success: false,
-        message: "User not found"
+        message: "Admin not found"
       });
     }
-    User.comparePassword(password, user.password, (err, isMatch) => {
+    User.comparePassword(password, admin.password, (err, isMatch) => {
       if (err) throw err;
       if (isMatch) {
         const token = jwt.sign(
           {
             type: "user",
             data: {
-              _id: user._id,
-              username: user.username,
-              name: user.name,
-              email: user.email,
-              contact: user.contact
+              _id: admin._id,
+              username: admin.username,
+              name: admin.name,
+              email: admin.email,
+              contact: admin.contact,
+              job_profile: admin.job_profile
             }
           },
           config.secret,
