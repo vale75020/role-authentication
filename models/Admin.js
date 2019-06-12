@@ -45,7 +45,7 @@ module.exports.getAdminById = function(id, callback){
 // Find the admin by its username
 module.exports.getAdminByUsername = function(username, callback){
     const query = {
-        username:username
+        username: username
     }
     Admin.findOne(query, callback);
 }

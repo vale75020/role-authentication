@@ -40,7 +40,7 @@ router.post("/login", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  Admin.getUserByUsername(username, (err, admin) => {
+  Admin.getAdminByUsername(username, (err, admin) => {
     if (err) throw err;
     if (!admin) {
       return res.json({
@@ -48,12 +48,12 @@ router.post("/login", (req, res) => {
         message: "Admin not found"
       });
     }
-    User.comparePassword(password, admin.password, (err, isMatch) => {
+    Admin.comparePassword(password, admin.password, (err, isMatch) => {
       if (err) throw err;
       if (isMatch) {
         const token = jwt.sign(
           {
-            type: "user",
+            type: "admin",
             data: {
               _id: admin._id,
               username: admin.username,
@@ -83,7 +83,9 @@ router.post("/login", (req, res) => {
 });
 
 // Get authenticated user profile
-router.get('/profile',passport.authenticate('jwt', {session: false}),(req, res) => {
+router.get('/profile',passport.authenticate('jwt', {
+  session: false
+}), (req, res) => {
   console.log(req.user)  
   return res.json(req.user);
 })

@@ -46,7 +46,9 @@ app.get("/", (req, res) => {
 
 // Create a custom middleware function
 const checkUserType = function(req, res, next){
-  console.log(req.originalUrl.split('/'));
+  const userType = req.originalUrl.split('/')[2];
+  // bring in the passport authentication strategy
+  require('./config/passport')(userType, passport);
   next();
 };
 
